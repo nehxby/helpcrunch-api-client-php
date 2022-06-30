@@ -1,6 +1,6 @@
 <?php
 
-namespace Helpcrunch\PublicApi;
+namespace Helpcrunch\PublicApi\Tools;
 
 class Entity
 {

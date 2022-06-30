@@ -1,9 +1,10 @@
 <?php
 
-namespace Helpcrunch\PublicApi;
+namespace Helpcrunch\PublicApi\Tools;
 
-use \GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
+use Helpcrunch\PublicApi\Customers;
 
 class Client extends GuzzleClient
 {
@@ -12,11 +13,6 @@ class Client extends GuzzleClient
     const TOO_MANY_REQUESTS = 429;
     const DEFAULT_DOMAIN = 'com';
     const DEFAULT_SCHEMA = 'https://';
-
-    /**
-     * @var string
-     */
-    protected $privateKey;
 
     /**
      * @var array
@@ -87,10 +83,10 @@ class Client extends GuzzleClient
      * @param string|null $userId
      * @param int|null $id
      * @param string|null $email
-     * @return Customer|null
+     * @return Customers|null
      */
     public function getCustomer(string $userId = null, int $id = null, string $email = null) {
-        $customer = new Customer($this, [
+        $customer = new Customers($this, [
             'user_id' => $userId,
             'id' => $id,
             'email' => $email,
@@ -101,7 +97,7 @@ class Client extends GuzzleClient
 
     /**
      * @param string $userId
-     * @return Customer
+     * @return Customers
      */
     public function getCustomerByUserId(string $userId) {
         return $this->getCustomer($userId);
@@ -109,7 +105,7 @@ class Client extends GuzzleClient
 
     /**
      * @param int $id
-     * @return Customer
+     * @return Customers
      */
     public function getCustomerById(int $id) {
         return $this->getCustomer(null, $id);
@@ -117,7 +113,7 @@ class Client extends GuzzleClient
 
     /**
      * @param string $email
-     * @return Customer
+     * @return Customers
      */
     public function getCustomerByEmail(string $email) {
         return $this->getCustomer(null, null, $email);

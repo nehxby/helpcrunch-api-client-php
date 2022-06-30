@@ -2,6 +2,8 @@
 
 namespace Helpcrunch\PublicApi;
 
+use Helpcrunch\PublicApi\Tools\Entity;
+
 /**
  * @property int id
  * @property string user_id
@@ -11,7 +13,7 @@ namespace Helpcrunch\PublicApi;
  * @property bool unsubscribed
  * @property array custom_data
  */
-class Customer extends Entity
+class Customers extends Entity
 {
     /**
      * @var string
