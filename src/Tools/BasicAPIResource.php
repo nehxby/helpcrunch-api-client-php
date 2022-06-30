@@ -2,54 +2,45 @@
 
 namespace Helpcrunch\PublicApi\Tools;
 
-class BasicAPIResource
+abstract class BasicAPIResource
 {
-    /**
-     * @var string
-     */
-    protected static $endpoint;
+	/**
+	 * @var string
+	 */
+	protected static $endpoint;
 
-    /**
-     * @var Client
-     */
-    protected $apiClient;
+	/**
+	 * @var Client
+	 */
+	protected $apiClient;
 
-    /**
-     * @var array
-     */
-    public $fields = [];
 
-    public function __construct(Client $apiClient, array $fields = [])
-    {
-        $this->apiClient = $apiClient;
-        $this->fields = $fields;
-    }
+	public function __construct(Client $apiClient)
+	{
+		$this->apiClient = $apiClient;
+	}
 
-    public function save()
-    {
-        $this->apiClient->request('PATCH', static::$endpoint, [
-            'body' => json_encode([$this->fields], JSON_UNESCAPED_UNICODE),
-        ]);
-    }
+	/**
+	 * @return array|null
+	 */
+	public function list(/*int $limit = 100, int $offset = 0*/): ?array
+	{
+		return $this->request('GET', static::$endpoint, [
+			//'limit'  => $limit,
+			//'offset' => $offset,
+		]);
+	}
 
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public function __get(string $name)
-    {
-        return $this->fields[$name] ?? null;
-    }
+	/**
+	 * @param string $method
+	 * @param string|null $endpoint
+	 * @param array $data
+	 *
+	 * @return array|null
+	 */
+	protected function request(string $method = 'GET', string $endpoint = NULL, array $data = []): ?array
+	{
+		return $this->apiClient->request($method, $endpoint ?? static::$endpoint, $data);
+	}
 
-    /**
-     * @param string $name
-     * @param string|int $value
-     * @return $this
-     */
-    public function __set(string $name, $value)
-    {
-        $this->fields[$name] = $value;
-
-        return $this;
-    }
 }

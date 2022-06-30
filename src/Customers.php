@@ -2,90 +2,126 @@
 
 namespace Helpcrunch\PublicApi;
 
-use Helpcrunch\PublicApi\Tools\BasicAPIResource;
 
-/**
- * @property int id
- * @property string user_id
- * @property string email
- * @property string name
- * @property string company
- * @property bool unsubscribed
- * @property array custom_data
- */
-class Customers extends BasicAPIResource
+use Helpcrunch\PublicApi\Tools\APIResource;
+use Helpcrunch\PublicApi\Tools\SearchFilters;
+
+class Customers extends APIResource
 {
-    /**
-     * @var string
-     */
-    protected static $endpoint = 'customers';
 
-    public function load()
-    {
-        $response = $this->apiClient->request('GET', static::$endpoint, [
-            'query' => $this->getSearchArguments(),
-        ]);
-        if ($response && ($body = $response->getBody()->getContents())) {
-            $responseJson = json_decode($body, true);
-            $this->fields = array_merge($this->fields, $responseJson);
-            return true;
-        }
+	const SORT_FIRST_SEEN = 'customers.firstSeen';
+	const SORT_LAST_SEEN = 'customers.lastSeen';
 
-        return false;
-    }
 
-    /**
-     * @return string[]
-     */
-    private function getSearchArguments()
-    {
-        $search = [];
-        foreach (['user_id', 'id', 'email'] as $field) {
-            if ($this->fields[$field]) {
-                $search[$field] = $this->fields[$field];
-            }
-        }
-        if (empty($search)) {
-            throw new \InvalidArgumentException('You need ID, user_id or email to load customer');
-        }
+	/**
+	 * @var string
+	 */
+	protected static $endpoint = 'customers';
 
-        return $search;
-    }
 
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public function getCustomDataItem(string $name)
-    {
-        return $this->fields['custom_data'][$name] ?? null;
-    }
+	public function list(int $limit = 100, int $offset = 0, string $sort = self::SORT_FIRST_SEEN, string $order = 'asc'): ?array
+	{
+		return parent::list($limit, $offset, $sort, $order);
+	}
 
-    /**
-     * @param string $name
-     * @param string|int $value
-     * @return $this
-     */
-    public function setCustomDataItem($name, $value)
-    {
-        if (!isset($this->fields['custom_data']) || !is_array($this->fields['custom_data'])) {
-            $this->fields['custom_data'] = [];
-        }
-        $this->fields['custom_data'][$name] = $value;
+	public function search(SearchFilters $filter, int $limit = 20, int $offset = 0, string $sort = self::SORT_LAST_SEEN, string $order = 'asc'): ?array
+	{
+		return parent::search($filter, $limit, $offset, $sort, $order);
+	}
 
-        return $this;
-    }
+	/**
+	 * @param string $name
+	 * @param string $email
+	 * @param string $userId
+	 * @param array $fields
+	 * @return array|null
+	 */
+	public function add(string $name, string $email, string $userId = '', array $fields = []): ?array
+	{
+		$data = array_merge([
+			'name'   => $name,
+			'email'  => $email,
+			'userId' => $userId,
+		], $fields);
 
-    /**
-     * @param array $customData
-     * @return $this
-     */
-    public function updateCustomData(array $customData)
-    {
-        foreach ($customData as $field => $value) {
-            $this->setCustomDataItem($field, $value);
-        }
+		return parent::create($data);
+	}
 
-        return $this;
-    }
+	/**
+	 * @param int $id
+	 * @param array $tags example [{'name' => 'tagname', 'color => '#ccc'}, {...}]
+	 * @return array|null
+	 */
+	public function tag(int $id, array $tags): ?array
+	{
+		$bodyParams = [
+			'tags' => $tags,
+		];
+
+		return $this->request('PUT', sprintf('%s/%d/%s', static::$endpoint, $id, 'tags'), [
+			'body' => json_encode($bodyParams)
+		]);
+	}
+
+	/**
+	 * @param int $id
+	 * @param array $tags example [{'name' => 'tagname'}, {...}]
+	 * @return array|null
+	 */
+	public function untag(int $id, array $tags): ?array
+	{
+		$bodyParams = [
+			'tags' => $tags,
+		];
+
+		return $this->request('DELETE', sprintf('%s/%d/%s', static::$endpoint, $id, 'tags'), [
+			'body' => json_encode($bodyParams)
+		]);
+	}
+
+
+	/**
+	 * @param array $data
+	 * @param int|NULL $id
+	 * @param bool $merge
+	 * @return array|null
+	 * @throws \Exception
+	 */
+	public function update(array $data, int $id = NULL, bool $merge = TRUE): ?array
+	{
+		$id = $id ?? $data['id'] ?? NULL;
+		if ($id === NULL) {
+			throw new \Exception('Id cannot be null');
+		}
+
+		$method = $merge ? 'PATCH' : 'PUT';
+		return $this->request($method, sprintf('%s/%d', static::$endpoint, $id), [
+			'body' => json_encode($data)
+		]);
+	}
+
+	/**
+	 * @param int $id
+	 * @param string $eventName
+	 * @param array $data
+	 * @return array|null
+	 * @throws \Exception
+	 */
+	public function addEvent(int $id, string $eventName, array $data): ?array
+	{
+		if (empty($data)) {
+			throw new \Exception('data value is invalid');
+		}
+
+		$bodyParams = [
+			'name'     => $eventName,
+			'data'     => $data,
+			'customer' => $id,
+		];
+
+		return $this->request('POST', 'events', [
+			'body' => json_encode($bodyParams)
+		]);
+	}
+
 }
