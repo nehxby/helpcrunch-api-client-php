@@ -6,6 +6,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
 use Helpcrunch\PublicApi\Agents;
+use Helpcrunch\PublicApi\Applications;
 use Helpcrunch\PublicApi\Chats;
 use Helpcrunch\PublicApi\Customers;
 use Helpcrunch\PublicApi\Departments;
