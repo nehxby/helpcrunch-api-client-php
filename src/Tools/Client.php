@@ -5,7 +5,10 @@ namespace Helpcrunch\PublicApi\Tools;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
+use Helpcrunch\PublicApi\Agents;
+use Helpcrunch\PublicApi\Chats;
 use Helpcrunch\PublicApi\Customers;
+use Helpcrunch\PublicApi\Departments;
 
 class Client extends GuzzleClient
 {
@@ -22,6 +25,10 @@ class Client extends GuzzleClient
 
 
 	protected $customers;
+	protected $chats;
+	protected $agents;
+	protected $departments;
+	protected $applications;
 
 	/**
 	 * @param string|null $organizationDomain
@@ -96,6 +103,42 @@ class Client extends GuzzleClient
 		}
 
 		return $this->customers;
+	}
+
+	public function getChats(): Chats
+	{
+		if (!$this->chats) {
+			$this->chats = new Chats($this);
+		}
+
+		return $this->chats;
+	}
+
+	public function getAgents(): Agents
+	{
+		if (!$this->agents) {
+			$this->agents = new Agents($this);
+		}
+
+		return $this->agents;
+	}
+
+	public function getDepartments(): Departments
+	{
+		if (!$this->departments) {
+			$this->departments = new Departments($this);
+		}
+
+		return $this->departments;
+	}
+
+	public function getApplications(): Applications
+	{
+		if (!$this->applications) {
+			$this->applications = new Applications($this);
+		}
+
+		return $this->applications;
 	}
 
 }
