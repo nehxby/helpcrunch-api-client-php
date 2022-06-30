@@ -2,7 +2,7 @@
 
 namespace Helpcrunch\PublicApi;
 
-use Helpcrunch\PublicApi\Tools\Entity;
+use Helpcrunch\PublicApi\Tools\BasicAPIResource;
 
 /**
  * @property int id
@@ -13,7 +13,7 @@ use Helpcrunch\PublicApi\Tools\Entity;
  * @property bool unsubscribed
  * @property array custom_data
  */
-class Customers extends Entity
+class Customers extends BasicAPIResource
 {
     /**
      * @var string

@@ -2,7 +2,7 @@
 
 namespace Helpcrunch\PublicApi\Tools;
 
-class Entity
+class BasicAPIResource
 {
     /**
      * @var string
