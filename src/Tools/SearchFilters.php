@@ -16,7 +16,35 @@ abstract class SearchFilters
 	const COMP_OR = 'OR';
 	const COMP_AND = 'AND';
 
+	private $_comparison;
+
 	private $_filters = [];
+
+	/**
+	 * @param string $comparison
+	 */
+	public function __construct(string $comparison = self::COMP_AND)
+	{
+		$this->_comparison = $comparison;
+	}
+
+	/**
+	 * @param mixed $comparison
+	 * @return SearchFilters
+	 */
+	public function setComparison($comparison): SearchFilters
+	{
+		$this->_comparison = $comparison;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getComparison()
+	{
+		return $this->_comparison;
+	}
 
 	/**
 	 * @return array
@@ -26,9 +54,9 @@ abstract class SearchFilters
 		return $this->_filters;
 	}
 
-	public function addFilter(string $field, $value, string $operator = self::OP_EQUALS): SearchFilters
+	public function addFilter(string $field, $value, string $operator = self::OP_EQUALS, string $alias = NULL): SearchFilters
 	{
-		$this->_filters[$field] = [
+		$this->_filters[$alias ?? $field] = [
 			'field'    => $field,
 			'operator' => $operator,
 			'value'    => $value
@@ -48,13 +76,13 @@ abstract class SearchFilters
 		return $this;
 	}
 
-	public function makeBodyParams(string $comparison = self::COMP_AND): array
+	public function makeBodyParams(): array
 	{
 		if (empty($this->_filters)) {
 			return [];
 		} elseif (sizeof($this->_filters) > 1) {
 			return [
-				'comparison' => $comparison,
+				'comparison' => $this->_comparison,
 				'filter' => array_values($this->_filters),
 			];
 		} else {
