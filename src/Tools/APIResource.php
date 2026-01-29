@@ -2,12 +2,13 @@
 
 namespace Helpcrunch\PublicApi\Tools;
 
+use GuzzleHttp\Exception\GuzzleException;
+
 abstract class APIResource extends BasicAPIResource
 {
 
 	/**
-	 * @param int $id
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function get(int $id): ?array
 	{
@@ -15,11 +16,7 @@ abstract class APIResource extends BasicAPIResource
 	}
 
 	/**
-	 * @param int $limit
-	 * @param int $offset
-	 * @param string $sort
-	 * @param string $order
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function list(int $limit = 100, int $offset = 0, string $sort = '', string $order = 'asc'): ?array
 	{
@@ -37,15 +34,11 @@ abstract class APIResource extends BasicAPIResource
 	}
 
 	/**
-	 * @param SearchFilters $filter
-	 * @param int $limit
-	 * @param int $offset
-	 * @param string $sort
-	 * @param string $order
-	 * @return array|null
 	 * @throws \Exception
+	 * @throws GuzzleException
 	 */
-	public function search(SearchFilters $filter, int $limit = 20, int $offset = 0, string $sort = '', string $order = 'asc'): ?array
+	public function search(SearchFilters $filter, int $limit = 20, int $offset = 0, string $sort = '',
+	                       string $order = 'asc'): ?array
 	{
 		$bodyParams = array_merge($filter->makeBodyParams(), [
 			'limit'  => $limit,
@@ -69,8 +62,7 @@ abstract class APIResource extends BasicAPIResource
 	}
 
 	/**
-	 * @param array $data
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	protected function create(array $data): ?array
 	{

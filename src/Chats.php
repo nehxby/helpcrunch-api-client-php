@@ -3,50 +3,46 @@
 namespace Helpcrunch\PublicApi;
 
 
+use GuzzleHttp\Exception\GuzzleException;
 use Helpcrunch\PublicApi\Tools\APIResource;
 use Helpcrunch\PublicApi\Tools\SearchFilters;
 
 class Chats extends APIResource
 {
 
-	const SORT_CREATED_AT = 'chats.createdAt';
-	const SORT_LAST_CUST_MSG_AT = 'chats.lastCustomerMessageAt';
-	const SORT_LAST_MSG_AT = 'chats.lastMessageAt';
-	const SORT_CLOSED_AT = 'chats.closedAt';
+	public const string SORT_CREATED_AT = 'chats.createdAt';
+	public const string SORT_LAST_CUST_MSG_AT = 'chats.lastCustomerMessageAt';
+	public const string SORT_LAST_MSG_AT = 'chats.lastMessageAt';
+	public const string SORT_CLOSED_AT = 'chats.closedAt';
 
 
-	/**
-	 * @var string
-	 */
-	protected static $endpoint = 'chats';
+	protected static string $endpoint = 'chats';
 
 	/**
 	 * documented but not work
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
-	private function count(): ?array
+	protected function count(): ?array
 	{
 		return $this->request('GET', sprintf('%s/%s', static::$endpoint, 'total'));
 	}
 
-	public function list(int $limit = 100, int $offset = 0, string $sort = self::SORT_CREATED_AT, string $order = 'asc'): ?array
+	public function list(int    $limit = 100, int $offset = 0, string $sort = self::SORT_CREATED_AT,
+	                     string $order = 'asc'): ?array
 	{
 		return parent::list($limit, $offset, $sort, $order);
 	}
 
-	public function search(SearchFilters $filter, int $limit = 20, int $offset = 0, string $sort = self::SORT_LAST_CUST_MSG_AT, string $order = 'asc'): ?array
+	public function search(SearchFilters $filter, int $limit = 20, int $offset = 0,
+	                       string        $sort = self::SORT_LAST_CUST_MSG_AT, string $order = 'asc'): ?array
 	{
 		return parent::search($filter, $limit, $offset, $sort, $order);
 	}
 
 	/**
-	 * @param int $customer
-	 * @param int $application
-	 * @param int|NULL $assignee
-	 * @param int|NULL $department
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
-	public function add(int $customer, int $application, int $assignee = NULL, int $department = NULL): ?array
+	public function add(int $customer, int $application, ?int $assignee = NULL, ?int $department = NULL): ?array
 	{
 		$data = [
 			'customer'    => $customer,
@@ -59,6 +55,9 @@ class Chats extends APIResource
 	}
 
 
+	/**
+	 * @throws GuzzleException
+	 */
 	public function messages(int $chatId, int $limit = 100, int $offset = 0): ?array
 	{
 		return $this->request('GET', sprintf('%s/%s/%s', static::$endpoint, $chatId, 'messages'), [
@@ -68,13 +67,9 @@ class Chats extends APIResource
 	}
 
 	/**
-	 * @param int $chatId
-	 * @param string $text
-	 * @param int|NULL $agent
-	 * @param string|NULL $markdownText
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
-	public function addMessage(int $chatId, string $text, ?int $agent = NULL, string $markdownText = NULL): ?array
+	public function addMessage(int $chatId, string $text, ?int $agent = NULL, ?string $markdownText = NULL): ?array
 	{
 		$data = [
 			'chat'         => $chatId,
@@ -90,9 +85,7 @@ class Chats extends APIResource
 	}
 
 	/**
-	 * @param int $id
-	 * @param int $time
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function snooze(int $id, int $time): ?array
 	{
@@ -107,8 +100,7 @@ class Chats extends APIResource
 	}
 
 	/**
-	 * @param int $id
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function unSnooze(int $id): ?array
 	{
@@ -123,9 +115,7 @@ class Chats extends APIResource
 	}
 
 	/**
-	 * @param int $id
-	 * @param string $status
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function status(int $id, string $status): ?array
 	{
@@ -140,9 +130,7 @@ class Chats extends APIResource
 	}
 
 	/**
-	 * @param int $id
-	 * @param int $assignee
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function assignee(int $id, int $assignee): ?array
 	{
@@ -157,9 +145,7 @@ class Chats extends APIResource
 	}
 
 	/**
-	 * @param int $id
-	 * @param int $department
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function department(int $id, int $department): ?array
 	{

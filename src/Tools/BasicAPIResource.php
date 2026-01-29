@@ -2,17 +2,13 @@
 
 namespace Helpcrunch\PublicApi\Tools;
 
+use GuzzleHttp\Exception\GuzzleException;
+
 abstract class BasicAPIResource
 {
-	/**
-	 * @var string
-	 */
-	protected static $endpoint;
+	protected static string $endpoint;
 
-	/**
-	 * @var Client
-	 */
-	protected $apiClient;
+	protected Client $apiClient;
 
 
 	public function __construct(Client $apiClient)
@@ -22,6 +18,7 @@ abstract class BasicAPIResource
 
 	/**
 	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function list(/*int $limit = 100, int $offset = 0*/): ?array
 	{
@@ -32,13 +29,9 @@ abstract class BasicAPIResource
 	}
 
 	/**
-	 * @param string $method
-	 * @param string|null $endpoint
-	 * @param array $data
-	 *
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
-	protected function request(string $method = 'GET', string $endpoint = NULL, array $data = []): ?array
+	protected function request(string $method = 'GET', ?string $endpoint = NULL, array $data = []): ?array
 	{
 		return $this->apiClient->request($method, $endpoint ?? static::$endpoint, $data);
 	}

@@ -3,19 +3,18 @@
 namespace Helpcrunch\PublicApi;
 
 
+use GuzzleHttp\Exception\GuzzleException;
 use Helpcrunch\PublicApi\Tools\BasicAPIResource;
 
 class Agents extends BasicAPIResource
 {
 
-	/**
-	 * @var string
-	 */
-	protected static $endpoint = 'agents';
+	protected static string $endpoint = 'agents';
 
 	/**
 	 * @param int $id
 	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function unsubscribe(int $id): ?array
 	{

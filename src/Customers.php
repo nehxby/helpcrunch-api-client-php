@@ -3,38 +3,34 @@
 namespace Helpcrunch\PublicApi;
 
 
+use GuzzleHttp\Exception\GuzzleException;
 use Helpcrunch\PublicApi\Tools\APIResource;
 use Helpcrunch\PublicApi\Tools\SearchFilters;
 
 class Customers extends APIResource
 {
 
-	const SORT_FIRST_SEEN = 'customers.firstSeen';
-	const SORT_LAST_SEEN = 'customers.lastSeen';
+	public const string SORT_FIRST_SEEN = 'customers.firstSeen';
+	public const string SORT_LAST_SEEN = 'customers.lastSeen';
 
 
-	/**
-	 * @var string
-	 */
-	protected static $endpoint = 'customers';
+	protected static string $endpoint = 'customers';
 
 
-	public function list(int $limit = 100, int $offset = 0, string $sort = self::SORT_FIRST_SEEN, string $order = 'asc'): ?array
+	public function list(int    $limit = 100, int $offset = 0, string $sort = self::SORT_FIRST_SEEN,
+	                     string $order = 'asc'): ?array
 	{
 		return parent::list($limit, $offset, $sort, $order);
 	}
 
-	public function search(SearchFilters $filter, int $limit = 20, int $offset = 0, string $sort = self::SORT_LAST_SEEN, string $order = 'asc'): ?array
+	public function search(SearchFilters $filter, int $limit = 20, int $offset = 0, string $sort = self::SORT_LAST_SEEN,
+	                       string        $order = 'asc'): ?array
 	{
 		return parent::search($filter, $limit, $offset, $sort, $order);
 	}
 
 	/**
-	 * @param string $name
-	 * @param string $email
-	 * @param string $userId
-	 * @param array $fields
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function add(string $name, string $email, string $userId = '', array $fields = []): ?array
 	{
@@ -48,9 +44,8 @@ class Customers extends APIResource
 	}
 
 	/**
-	 * @param int $id
 	 * @param array $tags example [{'name' => 'tagname', 'color => '#ccc'}, {...}]
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function tag(int $id, array $tags): ?array
 	{
@@ -64,9 +59,8 @@ class Customers extends APIResource
 	}
 
 	/**
-	 * @param int $id
 	 * @param array $tags example [{'name' => 'tagname'}, {...}]
-	 * @return array|null
+	 * @throws GuzzleException
 	 */
 	public function untag(int $id, array $tags): ?array
 	{
@@ -81,13 +75,10 @@ class Customers extends APIResource
 
 
 	/**
-	 * @param array $data
-	 * @param int|NULL $id
-	 * @param bool $merge
-	 * @return array|null
 	 * @throws \Exception
+	 * @throws GuzzleException
 	 */
-	public function update(array $data, int $id = NULL, bool $merge = TRUE): ?array
+	public function update(array $data, ?int $id = NULL, bool $merge = TRUE): ?array
 	{
 		$id = $id ?? $data['id'] ?? NULL;
 		if ($id === NULL) {
@@ -101,11 +92,8 @@ class Customers extends APIResource
 	}
 
 	/**
-	 * @param int $id
-	 * @param string $eventName
-	 * @param array $data
-	 * @return array|null
 	 * @throws \Exception
+	 * @throws GuzzleException
 	 */
 	public function addEvent(int $id, string $eventName, array $data): ?array
 	{

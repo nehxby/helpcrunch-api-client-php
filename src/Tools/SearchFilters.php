@@ -4,21 +4,21 @@ namespace Helpcrunch\PublicApi\Tools;
 
 abstract class SearchFilters
 {
-	const OP_EQUALS = '='; // All data types
-	const OP_NOT_EQUALS = '!='; // All data types
-	const OP_GREATER = '>'; // Integer or Date
-	const OP_LESS = '<'; // Integer or Date
-	const OP_GREATER_EQUALS = '>='; // Integer or Date
-	const OP_LESS_EQUALS = '<='; // Integer or Date
-	const OP_CONTAINS = '~'; // String
-	const OP_NOT_CONTAINS = '!~'; // String
+	public const string OP_EQUALS = '='; // All data types
+	public const string OP_NOT_EQUALS = '!='; // All data types
+	public const string OP_GREATER = '>'; // Integer or Date
+	public const string OP_LESS = '<'; // Integer or Date
+	public const string OP_GREATER_EQUALS = '>='; // Integer or Date
+	public const string OP_LESS_EQUALS = '<='; // Integer or Date
+	public const string OP_CONTAINS = '~'; // String
+	public const string OP_NOT_CONTAINS = '!~'; // String
 
-	const COMP_OR = 'OR';
-	const COMP_AND = 'AND';
+	public const string COMP_OR = 'OR';
+	public const string COMP_AND = 'AND';
 
-	private $_comparison;
+	private string $_comparison;
 
-	private $_filters = [];
+	private array $_filters = [];
 
 	/**
 	 * @param string $comparison
@@ -28,20 +28,13 @@ abstract class SearchFilters
 		$this->_comparison = $comparison;
 	}
 
-	/**
-	 * @param mixed $comparison
-	 * @return SearchFilters
-	 */
-	public function setComparison($comparison): SearchFilters
+	public function setComparison(string $comparison): SearchFilters
 	{
 		$this->_comparison = $comparison;
 		return $this;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getComparison()
+	public function getComparison(): string
 	{
 		return $this->_comparison;
 	}
@@ -54,7 +47,7 @@ abstract class SearchFilters
 		return $this->_filters;
 	}
 
-	public function addFilter(string $field, $value, string $operator = self::OP_EQUALS, string $alias = NULL): SearchFilters
+	public function addFilter(string $field, $value, string $operator = self::OP_EQUALS, ?string $alias = NULL): static
 	{
 		$this->_filters[$alias ?? $field] = [
 			'field'    => $field,
@@ -64,13 +57,13 @@ abstract class SearchFilters
 		return $this;
 	}
 
-	public function removeFilter(string $field): SearchFilters
+	public function removeFilter(string $field): static
 	{
 		unset($this->_filters[$field]);
 		return $this;
 	}
 
-	public function clear(): SearchFilters
+	public function clear(): static
 	{
 		$this->_filters = [];
 		return $this;

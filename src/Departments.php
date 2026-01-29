@@ -3,16 +3,17 @@
 namespace Helpcrunch\PublicApi;
 
 
+use GuzzleHttp\Exception\GuzzleException;
 use Helpcrunch\PublicApi\Tools\BasicAPIResource;
 
 class Departments extends BasicAPIResource
 {
+	protected static string $endpoint = 'departments';
+
+
 	/**
-	 * @var string
+	 * @throws GuzzleException
 	 */
-	protected static $endpoint = 'departments';
-
-
 	public function organization(): ?array
 	{
 		return $this->request('GET', 'organization');

@@ -8,7 +8,7 @@ You will need your Public API Key from you HelpCrunch Account -> Settings -> Dev
 This client library will cover most of requests descript here: https://docs.helpcrunch.com/rest-api-v1 
 
 ### Prerequisites
-PHP 7.2, Composer, php-json (default extension)
+PHP 8.4, Composer, php-json (default extension)
 
 ### Installation
 Composer installation will be added later.

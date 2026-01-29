@@ -4,6 +4,7 @@ namespace Helpcrunch\PublicApi\Tools;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use Helpcrunch\PublicApi\Agents;
 use Helpcrunch\PublicApi\Applications;
@@ -11,29 +12,28 @@ use Helpcrunch\PublicApi\Chats;
 use Helpcrunch\PublicApi\Customers;
 use Helpcrunch\PublicApi\Departments;
 
-class Client extends GuzzleClient
+class Client
 {
-	const INVALID_KEY_CODE = 401;
-	const NOT_FOUND_CODE = 404;
-	const TOO_MANY_REQUESTS = 429;
-	const DEFAULT_DOMAIN = 'com';
-	const DEFAULT_SCHEMA = 'https://';
+	protected const int INVALID_KEY_CODE = 401;
+	protected const int NOT_FOUND_CODE = 404;
+	protected const int TOO_MANY_REQUESTS = 429;
+	protected const string DEFAULT_DOMAIN = 'com';
+	protected const string DEFAULT_SCHEMA = 'https://';
+
+	private array $headers = [];
+
+	protected GuzzleClient $client;
+
+
+	protected ?Customers $customers = NULL;
+	protected ?Chats $chats = NULL;
+	protected ?Agents $agents = NULL;
+	protected ?Departments $departments = NULL;
+	protected ?Applications $applications = NULL;
 
 	/**
-	 * @var array
-	 */
-	private $headers = [];
-
-
-	protected $customers;
-	protected $chats;
-	protected $agents;
-	protected $departments;
-	protected $applications;
-
-	/**
-	 * @param string|null $organizationDomain
-	 * @param string|null $privateKey
+	 * @param string $organizationDomain
+	 * @param string $privateKey
 	 */
 	public function __construct(string $organizationDomain, string $privateKey)
 	{
@@ -50,7 +50,7 @@ class Client extends GuzzleClient
 			define('HELPCRUNCH_PUBLIC_API_DOMAIN', static::DEFAULT_DOMAIN);
 		}
 
-		parent::__construct([
+		$this->client = new GuzzleClient([
 			'base_uri' => HELPCRUNCH_PUBLIC_API_SCHEMA . 'api.helpcrunch.' . HELPCRUNCH_PUBLIC_API_DOMAIN . '/v1/',
 		]);
 		$this->headers = [
@@ -58,14 +58,24 @@ class Client extends GuzzleClient
 		];
 	}
 
+	/**
+	 * @throws GuzzleException
+	 */
 	public function request($method, $uri = '', array $options = [])
 	{
 		$options['headers'] = $this->headers;
+		// переконаємося, що http_errors увімкнено (за замовчуванням true):
+		$options['http_errors'] = TRUE;
+
 		try {
-			$response = parent::request($method, $uri, $options);
-			if ($response) return $this->handleResponse($response);
+			/**
+			 * @var Response $response
+			 */
+			$response = $this->client->request($method, $uri, $options);
+			return $this->handleResponse($response);
 		} catch (ClientException $exception) {
-			switch ($exception->getCode()) {
+			$response = $exception->getResponse();
+			switch ($response->getStatusCode()) {
 				case self::INVALID_KEY_CODE:
 					throw new \InvalidArgumentException('Invalid HelpCrunch API private key or organization domain');
 				case self::TOO_MANY_REQUESTS:
@@ -79,8 +89,6 @@ class Client extends GuzzleClient
 					throw $exception;
 			}
 		}
-
-		return $response;
 	}
 
 	/**
@@ -88,7 +96,7 @@ class Client extends GuzzleClient
 	 *
 	 * @return mixed
 	 */
-	private function handleResponse(Response $response)
+	private function handleResponse(Response $response): mixed
 	{
 		if ($body = $response->getBody()->getContents()) {
 			return json_decode($body, TRUE, 512, JSON_UNESCAPED_UNICODE);

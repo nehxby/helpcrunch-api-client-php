@@ -13,9 +13,9 @@
     }
   ],
   "require": {
-    "guzzlehttp/guzzle": "~6.0",
+    "php": "^8.4",
     "ext-json": "*",
-    "php": ">=7.2"
+    "guzzlehttp/guzzle": "^7.0"
   },
   "support": {
     "email": "info@helpcrunch.com",
