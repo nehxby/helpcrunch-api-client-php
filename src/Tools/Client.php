@@ -64,8 +64,6 @@ class Client
 	public function request($method, $uri = '', array $options = [])
 	{
 		$options['headers'] = $this->headers;
-		// переконаємося, що http_errors увімкнено (за замовчуванням true):
-		$options['http_errors'] = TRUE;
 
 		try {
 			/**
